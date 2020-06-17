@@ -1,2 +1,2 @@
 # web-icon-scraper
-Python Web Scraper which retrieves icons from websites
+Python Web Scraper which retrieves favicons from websites
