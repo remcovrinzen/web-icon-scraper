@@ -11,4 +11,4 @@ class Scraper:
         url = Url(self.orig_url)
         self.clean_url = url.get_clean_url()
         self.orig_url = url.get_url()
-        icon_finder = IconFinder(self.clean_url, self.orig_url)
+        self.icon_finder = IconFinder(self.clean_url, self.orig_url)

@@ -1,34 +1,31 @@
 import requests
 from icon import Icon
+import favicon
 
 
 class IconFinder:
-    MAX_RETRY = 3
-    MOST_COMMON_LOCATION = '/favicon.ico'
 
     def __init__(self, url, orig_url):
         self.orig_url = orig_url
         self.url_to_search = url
-        self.session = requests.Session()
         self.found = False
 
-        icon = self.find_icon_in_web_content()
+        icons = self.find_icons_at_url()
+        icon = self.get_largest_icon_from_list(icons)
 
         if self.found:
             icon = Icon(icon, orig_url)
+            self.found = icon.valid
+            self.icon = icon
 
-    def find_icon_in_web_content(self):
-        result = self.check_most_common_location()
+    def find_icons_at_url(self):
+        icons = favicon.get(self.url_to_search,  allow_redirects=True)
 
-        if result != None and result.status_code == 200:
+        return icons
+
+    def get_largest_icon_from_list(self, icons):
+        if len(icons) > 0:
             self.found = True
-            return result.content
+            return icons[0]
 
-    def check_most_common_location(self):
-        try:
-            request_result = self.session.get(
-                self.url_to_search + self.MOST_COMMON_LOCATION)
-        except requests.exceptions.RequestException as e:
-            request_result = None
-
-        return request_result
+        return None
