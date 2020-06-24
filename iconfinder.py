@@ -19,9 +19,11 @@ class IconFinder:
             self.icon = icon
 
     def find_icons_at_url(self):
-        icons = favicon.get(self.url_to_search,  allow_redirects=True)
-
-        return icons
+        try:
+            return favicon.get(self.url_to_search,
+                               allow_redirects=True, timeout=5)
+        except:
+            return []
 
     def get_largest_icon_from_list(self, icons):
         if len(icons) > 0:

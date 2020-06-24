@@ -17,8 +17,11 @@ class Icon:
         self.width = icon.width
         self.height = icon.height
         self.format = icon.format
-        self.icon_string = requests.get(self.icon.url).content
-        self.icon_image_buffer = self.convert_string_to_image(self.icon_string)
+
+        try:
+            self.icon_string = requests.get(self.icon.url, timeout=5).content
+        except Exception as e:
+            self.valid = False
 
         if self.valid:
             self.colors = self.get_most_used_colors()
@@ -26,21 +29,28 @@ class Icon:
             self.save_to_disk()
 
     def save_to_disk(self):
-        file_path = os.getcwd() + '/output/icons/' + \
-            self.orig_url + '.png'
+        image_buffer = self.convert_string_to_image_buffer(
+            self.icon_string)
 
-        with open(file_path, 'wb') as image:
-            image.write(self.icon_string)
+        try:
+            image = Image.open(image_buffer)
+            file_path = os.getcwd() + '/output/icons/' + \
+                self.orig_url + '.png'
+            image.save(file_path)
+        except Exception as e:
+            self.valid = False
 
-    def convert_string_to_image(self, base64_string):
+    def convert_string_to_image_buffer(self, base64_string):
         try:
             return io.BytesIO(base64_string)
         except OSError as e:
             self.valid = False
 
     def get_most_used_colors(self, number_of_colors=COLOR_PALETTE):
+        image_buffer = self.convert_string_to_image_buffer(self.icon_string)
+
         try:
-            colorthief = ColorThief(self.icon_image_buffer)
+            colorthief = ColorThief(image_buffer)
             return colorthief.get_palette(number_of_colors)
         except Exception as e:
             return None

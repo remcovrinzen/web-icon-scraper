@@ -7,7 +7,7 @@ import shutil
 import time
 
 
-INPUT_FILE_PATH = "/input/test.txt"
+INPUT_FILE_PATH = "/input/urls-remco.txt"
 OUTPUT_FILE_PATH = "/output/result.csv"
 
 
@@ -25,12 +25,8 @@ def process_url(url):
 
 
 def prepare_wd():
-    # Clean previous results
-    if path.exists(os.getcwd() + '/output'):
-        shutil.rmtree(os.getcwd() + "/output")
-
-    if not path.exists(os.getcwd() + '/output/icons'):
-        os.makedirs(os.getcwd() + '/output/icons')
+    if not path.exists(os.getcwd() + '/output'):
+        os.makedirs(os.getcwd() + '/output/icons', exist_ok=True)
 
 
 if __name__ == "__main__":
@@ -46,3 +42,5 @@ if __name__ == "__main__":
                       'domain', 'date_checked', 'found', 'width', 'height', 'colors'])
     df.to_csv(os.getcwd() + OUTPUT_FILE_PATH)
     print("--- %s seconds ---" % (time.time() - start_time))
+    number_found_icons = len(df[df['found'] == True].index)
+    print("--- Number of found icons: %d  ---" % number_found_icons)
